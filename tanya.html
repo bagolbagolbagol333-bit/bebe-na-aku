@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Satu Pertanyaan 💌</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    background: linear-gradient(160deg, #ffe0ec, #ffd1e6 45%, #e9d5ff);
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: #4a1d3d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    overflow: hidden;
+  }
+
+  .layar {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 420px;
+  }
+
+  #awal .emoji {
+    font-size: 84px;
+    display: inline-block;
+    animation: melayang 2.4s ease-in-out infinite;
+  }
+  @keyframes melayang {
+    50% { transform: translateY(-12px); }
+  }
+
+  h1 {
+    font-size: 26px;
+    line-height: 1.35;
+    margin: 14px 0 6px;
+    color: #be185d;
+  }
+  .sub {
+    font-size: 14px;
+    color: #9d5b83;
+    margin-bottom: 44px;
+  }
+
+  .tombol {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    min-height: 90px;
+  }
+
+  button {
+    font-family: inherit;
+    font-size: 17px;
+    font-weight: 700;
+    border: none;
+    border-radius: 999px;
+    padding: 13px 30px;
+    cursor: pointer;
+  }
+
+  #ya {
+    color: #fff;
+    background: linear-gradient(135deg, #ff4d8d, #e11d74);
+    box-shadow: 0 8px 22px rgba(225, 29, 116, .4);
+    transition: transform .3s;
+    z-index: 5;
+  }
+
+  #tidak {
+    color: #6b7280;
+    background: #fff;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, .12);
+    z-index: 10;
+    transition: left .25s, top .25s;
+    white-space: nowrap;
+  }
+
+  /* ---------- LAYAR AKHIR ---------- */
+  #akhir { display: none; }
+  #akhir .emoji { font-size: 90px; }
+  #akhir h2 {
+    font-size: 28px;
+    color: #be185d;
+    margin: 10px 0 16px;
+  }
+  #isi {
+    font-size: 16px;
+    line-height: 1.7;
+    white-space: pre-line;
+    min-height: 120px;
+    background: rgba(255, 255, 255, .55);
+    padding: 20px;
+    border-radius: 18px;
+    text-align: left;
+    box-shadow: 0 8px 26px rgba(190, 24, 93, .15);
+  }
+  #ttd {
+    margin-top: 14px;
+    font-weight: 600;
+    color: #9d174d;
+    opacity: 0;
+    transition: opacity 1.5s;
+  }
+  #ttd.muncul { opacity: 1; }
+
+  /* ---------- HATI JATUH ---------- */
+  .hati {
+    position: fixed;
+    top: -40px;
+    z-index: 1;
+    pointer-events: none;
+    animation: jatuh linear forwards;
+  }
+  @keyframes jatuh {
+    to { transform: translateY(115vh) rotate(30deg); opacity: .4; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layar" id="awal">
+  <div class="emoji">🥺</div>
+  <h1 id="tanya"></h1>
+  <p class="sub">Pilih dengan jujur ya</p>
+  <div class="tombol">
+    <button id="ya">Ya 💖</button>
+    <button id="tidak">Tidak</button>
+  </div>
+</div>
+
+<div class="layar" id="akhir">
+  <div class="emoji">🥰</div>
+  <h2 id="judul"></h2>
+  <div id="isi"></div>
+  <div id="ttd"></div>
+</div>
+
+<script>
+  /* ====== UBAH BAGIAN INI ====== */
+  const NAMA   = "Anindya";
+  const DARI   = "Maulana";
+  const TANYA  = `${NAMA}, kamu masih sayang sama aku, kan?`;
+  const JAWAB  = "Udah kuduga. 😌";
+  const ISI    =
+`Makasih ya sudah masih di sini.
+
+Aku memang sering nggak pandai bilang, tapi kamu tahu kan, kamu itu salah satu hal terbaik yang pernah aku punya.
+
+Aku juga sayang kamu. Hari ini, besok, dan seterusnya.`;
+  const TEKS_TIDAK = [
+    "Tidak", "Yakin?", "Coba pikir lagi 🥺", "Beneran?",
+    "Jangan gitu dong", "Aku sedih nih 😢", "Masa sih?",
+    "Pencet Ya aja deh", "Hehe nggak bisa kena 😜"
+  ];
+  /* ============================= */
+
+  const ya     = document.getElementById('ya');
+  const tidak  = document.getElementById('tidak');
+  const awal   = document.getElementById('awal');
+  const akhir  = document.getElementById('akhir');
+  const judul  = document.getElementById('judul');
+  const isi    = document.getElementById('isi');
+  const ttd    = document.getElementById('ttd');
+
+  document.getElementById('tanya').textContent = TANYA;
+
+  let skala = 1, hitung = 0;
+
+  /* ---------- TOMBOL TIDAK KABUR ---------- */
+  function kabur(e) {
+    e.preventDefault();
+    hitung++;
+
+    // tombol Ya makin besar (maksimal 3x)
+    skala = Math.min(skala + 0.22, 3);
+    ya.style.transform = `scale(${skala})`;
+
+    tidak.textContent = TEKS_TIDAK[hitung % TEKS_TIDAK.length];
+
+    // pindah ke posisi acak di layar
+    tidak.style.position = 'fixed';
+    const w = tidak.offsetWidth, h = tidak.offsetHeight;
+    const x = 10 + Math.random() * (innerWidth  - w - 20);
+    const y = 10 + Math.random() * (innerHeight - h - 20);
+    tidak.style.left = x + 'px';
+    tidak.style.top  = y + 'px';
+  }
+
+  tidak.addEventListener('mouseover', kabur);
+  tidak.addEventListener('touchstart', kabur, { passive: false });
+  tidak.addEventListener('click', kabur);
+
+  /* ---------- HATI JATUH ---------- */
+  function hati() {
+    const h = document.createElement('div');
+    h.className = 'hati';
+    h.textContent = ['💖', '💗', '💕', '💝', '❤️', '🌸'][Math.floor(Math.random() * 6)];
+    h.style.left = Math.random() * 100 + 'vw';
+    h.style.fontSize = (16 + Math.random() * 26) + 'px';
+    h.style.animationDuration = (3.5 + Math.random() * 3.5) + 's';
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 7500);
+  }
+
+  /* ---------- EFEK KETIK ---------- */
+  function ketik(el, teks, cepat, selesai) {
+    let i = 0;
+    (function tiap() {
+      el.textContent = teks.slice(0, ++i);
+      if (i < teks.length) setTimeout(tiap, cepat);
+      else if (selesai) selesai();
+    })();
+  }
+
+  /* ---------- KLIK YA ---------- */
+  ya.addEventListener('click', () => {
+    awal.style.display = 'none';
+    tidak.style.display = 'none';
+    akhir.style.display = 'block';
+
+    for (let i = 0; i < 30; i++) setTimeout(hati, i * 60);
+    setInterval(hati, 300);
+
+    ketik(judul, JAWAB, 70, () => {
+      ketik(isi, ISI, 38, () => {
+        ttd.textContent = '— ' + DARI;
+        ttd.classList.add('muncul');
+      });
+    });
+  });
+</script>
+</body>
+</html>
