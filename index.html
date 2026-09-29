@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kado Untukmu 💝</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    background: radial-gradient(circle at 50% 30%, #3b0a4a, #12041c 70%);
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  #fw {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* ---------- KOTAK KADO ---------- */
+  #kado {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    cursor: pointer;
+    transition: transform .6s, opacity .6s;
+  }
+  #kado .box {
+    font-size: 110px;
+    display: inline-block;
+    animation: goyang 1.6s infinite;
+    filter: drop-shadow(0 0 25px #ff4d8d);
+  }
+  #kado p {
+    margin-top: 16px;
+    font-size: 17px;
+    color: #ffc2dc;
+    animation: kedip 1.6s infinite;
+  }
+  #kado.hilang {
+    transform: scale(2.2);
+    opacity: 0;
+    pointer-events: none;
+  }
+  @keyframes goyang {
+    0%, 100% { transform: rotate(0) scale(1); }
+    20% { transform: rotate(-8deg) scale(1.05); }
+    40% { transform: rotate(8deg) scale(1.05); }
+    60% { transform: rotate(-5deg); }
+    80% { transform: rotate(5deg); }
+  }
+  @keyframes kedip { 50% { opacity: .35; } }
+
+  /* ---------- KARTU PESAN ---------- */
+  #kartu {
+    position: absolute;
+    z-index: 3;
+    width: 90%;
+    max-width: 420px;
+    max-height: 88vh;
+    overflow-y: auto;
+    padding: 30px 24px;
+    text-align: center;
+    background: rgba(255, 255, 255, .1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, .25);
+    border-radius: 22px;
+    box-shadow: 0 10px 40px rgba(255, 77, 141, .35);
+    opacity: 0;
+    transform: translateY(40px) scale(.9);
+    pointer-events: none;
+    transition: opacity 1s, transform 1s;
+  }
+  #kartu.muncul {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+  #kartu h1 {
+    font-size: 26px;
+    color: #ff8fbf;
+    margin-bottom: 14px;
+  }
+  #pesan {
+    font-size: 16px;
+    line-height: 1.7;
+    min-height: 170px;
+    white-space: pre-line;
+    text-align: left;
+  }
+  #ttd {
+    margin-top: 14px;
+    font-size: 15px;
+    color: #ffc2dc;
+    opacity: 0;
+    transition: opacity 1.5s;
+  }
+  #ttd.muncul { opacity: 1; }
+
+  #ulang {
+    margin-top: 18px;
+    padding: 10px 22px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(135deg, #ff4d8d, #a855f7);
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 1s;
+  }
+  #ulang.muncul { opacity: 1; }
+
+  /* ---------- HATI MELAYANG ---------- */
+  .hati {
+    position: fixed;
+    bottom: -40px;
+    z-index: 2;
+    pointer-events: none;
+    animation: naik linear forwards;
+  }
+  @keyframes naik {
+    to { transform: translateY(-115vh) rotate(25deg); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="fw"></canvas>
+
+<div id="kado">
+  <div class="box">🎁</div>
+  <p>Ketuk untuk membuka kadomu</p>
+</div>
+
+<div id="kartu">
+  <h1 id="judul"></h1>
+  <div id="pesan"></div>
+  <div id="ttd"></div>
+  <button id="ulang">🎆 Kembang api lagi</button>
+</div>
+
+<!-- Taruh file lagu di folder yang sama, namai: lagu.mp3 -->
+<audio id="lagu" src="lagu.mp3" loop preload="auto"></audio>
+
+<script>
+  /* ====== UBAH BAGIAN INI ====== */
+  const NAMA   = "Anindya";
+  const DARI   = "Maulana";
+  const PESAN  =
+`Anindya,
+
+aku sebenernya bingung mau nulis apa di sini, karena kalau disuruh ngomong langsung mungkin malah lebih gampang.
+
+Tapi kalau dipikir-pikir, banyak juga hal yang udah kita lewatin bareng. Dari yang awalnya cuma ngobrol biasa sampai akhirnya kamu jadi orang yang cukup sering ada di hari-hariku.
+
+Soal ke depannya, aku pengin terus jalan bareng kamu. Dan untuk sekarang, aku cuma mau bilang: aku seneng kamu ada di bagian ini.`;
+  /* ============================= */
+
+  const kado   = document.getElementById('kado');
+  const kartu  = document.getElementById('kartu');
+  const judul  = document.getElementById('judul');
+  const pesan  = document.getElementById('pesan');
+  const ttd    = document.getElementById('ttd');
+  const ulang  = document.getElementById('ulang');
+  const lagu   = document.getElementById('lagu');
+  const c      = document.getElementById('fw');
+  const ctx    = c.getContext('2d');
+
+  function ukuran() { c.width = innerWidth; c.height = innerHeight; }
+  ukuran();
+  addEventListener('resize', ukuran);
+
+  /* ---------- KEMBANG API ---------- */
+  let roket = [], partikel = [], aktif = false;
+
+  function luncur() {
+    roket.push({
+      x: Math.random() * c.width * 0.8 + c.width * 0.1,
+      y: c.height,
+      ty: Math.random() * c.height * 0.4 + 60,
+      hue: Math.random() * 360
+    });
+  }
+
+  function ledak(r) {
+    const n = 70;
+    for (let i = 0; i < n; i++) {
+      const a = Math.PI * 2 * i / n;
+      const s = Math.random() * 4 + 1.5;
+      partikel.push({
+        x: r.x, y: r.y,
+        vx: Math.cos(a) * s, vy: Math.sin(a) * s,
+        life: 1, hue: r.hue
+      });
+    }
+  }
+
+  function gambar() {
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.fillStyle = 'rgba(0,0,0,0.18)';
+    ctx.fillRect(0, 0, c.width, c.height);
+    ctx.globalCompositeOperation = 'lighter';
+
+    roket = roket.filter(r => {
+      r.y -= 7;
+      ctx.beginPath();
+      ctx.arc(r.x, r.y, 2.5, 0, 7);
+      ctx.fillStyle = `hsl(${r.hue},100%,70%)`;
+      ctx.fill();
+      if (r.y <= r.ty) { ledak(r); return false; }
+      return true;
+    });
+
+    partikel = partikel.filter(p => {
+      p.x += p.vx; p.y += p.vy;
+      p.vy += 0.045; p.vx *= 0.985;
+      p.life -= 0.012;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 2, 0, 7);
+      ctx.fillStyle = `hsla(${p.hue},100%,65%,${Math.max(p.life, 0)})`;
+      ctx.fill();
+      return p.life > 0;
+    });
+
+    requestAnimationFrame(gambar);
+  }
+
+  function mulaiKembangApi() {
+    if (aktif) return;
+    aktif = true;
+    gambar();
+    setInterval(() => { if (Math.random() < 0.7) luncur(); }, 600);
+  }
+
+  function salvo() {
+    for (let i = 0; i < 6; i++) setTimeout(luncur, i * 220);
+  }
+
+  /* ---------- HATI MELAYANG ---------- */
+  function hati() {
+    const h = document.createElement('div');
+    h.className = 'hati';
+    h.textContent = ['💖', '💗', '💕', '💝', '❤️'][Math.floor(Math.random() * 5)];
+    h.style.left = Math.random() * 100 + 'vw';
+    h.style.fontSize = (16 + Math.random() * 26) + 'px';
+    h.style.animationDuration = (5 + Math.random() * 5) + 's';
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 10500);
+  }
+
+  /* ---------- EFEK KETIK ---------- */
+  function ketik(el, teks, cepat, selesai) {
+    let i = 0;
+    (function tiap() {
+      el.textContent = teks.slice(0, ++i);
+      if (i < teks.length) setTimeout(tiap, cepat);
+      else if (selesai) selesai();
+    })();
+  }
+
+  /* ---------- BUKA KADO ---------- */
+  kado.addEventListener('click', () => {
+    kado.classList.add('hilang');
+
+    // lagu (harus lewat ketukan user agar diizinkan browser HP)
+    lagu.volume = 0.8;
+    lagu.play().catch(() => {});
+
+    mulaiKembangApi();
+    salvo();
+    setInterval(hati, 500);
+
+    setTimeout(() => {
+      kartu.classList.add('muncul');
+      ketik(judul, `Untukmu, ${NAMA} 💝`, 70, () => {
+        ketik(pesan, PESAN, 38, () => {
+          ttd.textContent = '— ' + DARI;
+          ttd.classList.add('muncul');
+          ulang.classList.add('muncul');
+          salvo();
+        });
+      });
+    }, 900);
+  });
+
+  ulang.addEventListener('click', salvo);
+</script>
+</body>
+</html>
