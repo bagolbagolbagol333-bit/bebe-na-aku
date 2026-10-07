@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Langit Buat Kamu ✨</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body { height: 100%; }
+
+  body {
+    background: radial-gradient(ellipse at 50% 0%, #1b1f4b 0%, #0b0d26 55%, #04050f 100%);
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: #fff;
+    overflow: hidden;
+    position: relative;
+    touch-action: none;
+  }
+
+  /* ---------- LANGIT YANG MUTER PELAN ---------- */
+  #langit {
+    position: fixed;
+    left: 50%; top: 50%;
+    width: 170vmax; height: 170vmax;
+    margin: -85vmax 0 0 -85vmax;
+    animation: putar 420s linear infinite;
+    z-index: 0;
+    pointer-events: none;
+  }
+  @keyframes putar { to { transform: rotate(360deg); } }
+
+  .latar {
+    position: absolute;
+    background: #fff;
+    border-radius: 50%;
+  }
+  .latar.kelip { animation: kelip 3s ease-in-out infinite; }
+  @keyframes kelip {
+    0%, 100% { opacity: .15; }
+    50% { opacity: 1; }
+  }
+
+  /* ---------- CAHAYA WARNA-WARNI ---------- */
+  .aurora {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(55px);
+    opacity: .3;
+    z-index: 0;
+    pointer-events: none;
+    will-change: transform;
+  }
+  #a1 {
+    width: 80vmax; height: 55vmax; left: -25vmax; top: -10vmax;
+    background: radial-gradient(circle, #6d28d9, transparent 65%);
+    animation: geser1 20s ease-in-out infinite alternate;
+  }
+  #a2 {
+    width: 70vmax; height: 50vmax; right: -25vmax; top: 25vh;
+    background: radial-gradient(circle, #0e7490, transparent 65%);
+    animation: geser2 24s ease-in-out infinite alternate;
+  }
+  #a3 {
+    width: 70vmax; height: 45vmax; left: -15vmax; bottom: -18vmax;
+    background: radial-gradient(circle, #be185d, transparent 65%);
+    animation: geser1 28s ease-in-out infinite alternate-reverse;
+  }
+  @keyframes geser1 { to { transform: translate(18vmax, 12vmax) scale(1.2); } }
+  @keyframes geser2 { to { transform: translate(-16vmax, -10vmax) scale(1.15); } }
+
+  /* ---------- HEADER ---------- */
+  header {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    padding: 34px 22px 0;
+    text-align: center;
+    z-index: 7;
+    pointer-events: none;
+  }
+  header h1 {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: .3px;
+    color: #ffe9a8;
+  }
+  header p {
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #b9bde6;
+  }
+  #hitung {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 5px 14px;
+    font-size: 13px;
+    color: #ffe9a8;
+    background: rgba(255, 233, 168, .12);
+    border: 1px solid rgba(255, 233, 168, .3);
+    border-radius: 999px;
+  }
+
+  #bulan {
+    position: absolute;
+    top: 150px;
+    right: 22px;
+    font-size: 38px;
+    z-index: 2;
+    animation: bulan 6s ease-in-out infinite;
+  }
+  @keyframes bulan {
+    0%, 100% { transform: translateY(0); filter: drop-shadow(0 0 10px rgba(255,240,180,.4)); }
+    50% { transform: translateY(-8px); filter: drop-shadow(0 0 22px rgba(255,240,180,.8)); }
+  }
+
+  /* ---------- AREA BINTANG (bisa berdetak) ---------- */
+  #medan {
+    position: fixed;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+  }
+  #medan.berdetak { animation: detak 1.4s ease-in-out infinite; }
+  @keyframes detak {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.045); }
+  }
+
+  #garis {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+  #petaHati {
+    fill: #ffb703;
+    fill-opacity: 0;
+    stroke: #ffd166;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 0 6px #ffb703);
+  }
+
+  /* ---------- BINTANG YANG BISA DIKETUK ---------- */
+  .bintang {
+    position: absolute;
+    width: 52px; height: 52px;
+    margin: -26px 0 0 -26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    pointer-events: auto;
+    z-index: 2;
+    touch-action: manipulation;
+    user-select: none;
+    animation: apung 6s ease-in-out infinite alternate;
+    transition: left 2.1s cubic-bezier(.65,0,.25,1), top 2.1s cubic-bezier(.65,0,.25,1);
+  }
+  .bintang.susun { animation: none; }
+  @keyframes apung {
+    from { transform: translate(-5px, -6px); }
+    to   { transform: translate(6px, 7px); }
+  }
+
+  .dalam {
+    display: block;
+    font-size: 30px;
+    color: #fff7d1;
+    text-shadow: 0 0 10px #fff3b0, 0 0 22px #ffd966;
+    animation: denyut 2.4s ease-in-out infinite;
+    transition: color .5s, text-shadow .5s;
+  }
+  @keyframes denyut {
+    0%, 100% { transform: scale(.85); opacity: .75; }
+    50% { transform: scale(1.15); opacity: 1; }
+  }
+  .bintang.ketemu .dalam {
+    color: #ffb703;
+    text-shadow: 0 0 12px #ffb703, 0 0 30px #ff8f00;
+    animation: none;
+    transform: scale(1.25);
+    opacity: 1;
+  }
+
+  /* ---------- KARTU ALASAN ---------- */
+  #kartu {
+    position: absolute;
+    left: 50%;
+    bottom: 5%;
+    width: 90%;
+    max-width: 420px;
+    min-height: 110px;
+    padding: 20px 22px;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, .09);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, .2);
+    border-radius: 20px;
+    text-align: center;
+    z-index: 7;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, .35);
+  }
+  #teks {
+    font-size: 16px;
+    line-height: 1.65;
+    white-space: pre-line;
+  }
+  #ttd {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #ffe9a8;
+    opacity: 0;
+    transition: opacity 1.5s;
+  }
+  #ttd.muncul { opacity: 1; }
+
+  /* ---------- EFEK-EFEK ---------- */
+  .meteor {
+    position: fixed;
+    width: 120px; height: 2px;
+    background: linear-gradient(90deg, rgba(255,255,255,0), #fff);
+    border-radius: 2px;
+    z-index: 3;
+    pointer-events: none;
+    animation: meteor 1.3s linear forwards;
+  }
+  @keyframes meteor {
+    from { transform: translate(0, 0) rotate(144deg); opacity: 1; }
+    to   { transform: translate(-280px, 205px) rotate(144deg); opacity: 0; }
+  }
+
+  .cincin {
+    position: fixed;
+    width: 50px; height: 50px;
+    border: 2px solid #ffe9a8;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 8;
+  }
+  .partikel {
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 8;
+  }
+  .jejak {
+    position: fixed;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #ffe9a8;
+    box-shadow: 0 0 10px #ffd966;
+    pointer-events: none;
+    z-index: 9;
+  }
+</style>
+</head>
+<body>
+
+<div id="langit"></div>
+<div class="aurora" id="a1"></div>
+<div class="aurora" id="a2"></div>
+<div class="aurora" id="a3"></div>
+
+<div id="medan">
+  <svg id="garis"><path id="petaHati"/></svg>
+</div>
+
+<header>
+  <h1 id="judul"></h1>
+  <p id="sub">Ada 12 bintang di langit ini. Tiap bintang nyimpen satu alasan kenapa aku sayang kamu. Ketuk satu-satu ya.</p>
+  <span id="hitung">✨ 0 / 12</span>
+</header>
+
+<div id="bulan">🌙</div>
+
+<div id="kartu">
+  <div id="teks">Terserah kamu mau pilih yang mana dulu 👆</div>
+  <div id="ttd"></div>
+</div>
+
+<!-- lagu yang sama dengan halaman kado. Hapus baris ini kalau nggak mau ada musik -->
+<audio id="lagu" src="lagu.mp3" loop preload="auto"></audio>
+
+<script>
+  /* ====== UBAH BAGIAN INI ====== */
+  const NAMA = "Anindya";
+  const DARI = "Maulana";
+
+  const ALASAN = [
+    "Senyummu itu, gatau kenapa, bisa ngilangin capekku dalam hitungan detik.",
+    "Kamu sabar banget ngadepin aku, bahkan pas aku lagi nyebelin-nyebelinnya.",
+    "Sama kamu, hal receh jadi kerasa seru. Ngobrol nggak jelas aja aku betah.",
+    "Kamu tempat pulang paling nyaman yang pernah aku punya.",
+    "Cara kamu peduli, yang kadang nggak kamu sadari, tapi aku selalu ngerasain.",
+    "Di hari yang berat sekalipun, cukup denger suaramu, aku ngerasa bakal baik-baik aja.",
+    "Kamu bikin aku pengin jadi lebih baik, dan kamu nggak pernah maksa sama sekali.",
+    "Tawamu. Serius, itu suara favoritku.",
+    "Kamu tetap tinggal, dan itu nggak pernah aku anggap biasa.",
+    "Kamu cantik banget, tapi herannya kamu nggak sadar.",
+    "Tiap aku bayangin masa depan, kamu selalu ada di sana.",
+    "Sebenernya nggak ada alasan yang cukup. Aku sayang kamu ya karena kamu itu kamu."
+  ];
+
+  const PENUTUP =
+`Semua bintangnya udah kamu temuin.
+
+Tapi jujur, alasan aku sayang kamu masih jauh lebih banyak dari ini. Kita cicil terus ya, pelan-pelan, seumur hidup.`;
+  /* ============================= */
+
+  document.getElementById('judul').textContent = `Langit buat ${NAMA} ✨`;
+
+  const teks    = document.getElementById('teks');
+  const ttd     = document.getElementById('ttd');
+  const hitung  = document.getElementById('hitung');
+  const sub     = document.getElementById('sub');
+  const lagu    = document.getElementById('lagu');
+  const medan   = document.getElementById('medan');
+  const petaHati = document.getElementById('petaHati');
+  const langit  = document.getElementById('langit');
+
+  /* ---------- BINTANG LATAR ---------- */
+  for (let i = 0; i < 240; i++) {
+    const s = document.createElement('div');
+    s.className = 'latar' + (i < 70 ? ' kelip' : '');
+    const u = Math.random() * 2 + 1;
+    s.style.width = s.style.height = u + 'px';
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top = Math.random() * 100 + '%';
+    s.style.opacity = 0.3 + Math.random() * 0.6;
+    if (i < 70) {
+      s.style.animationDelay = (Math.random() * 3) + 's';
+      s.style.animationDuration = (2 + Math.random() * 3) + 's';
+    }
+    langit.appendChild(s);
+  }
+
+  /* ---------- EFEK KETIK ---------- */
+  let token = 0;
+  function ketik(isi, cepat, selesai) {
+    const saya = ++token;
+    teks.textContent = '';
+    let i = 0;
+    (function tiap() {
+      if (saya !== token) return;
+      teks.textContent = isi.slice(0, ++i);
+      if (i < isi.length) setTimeout(tiap, cepat);
+      else if (selesai) selesai();
+    })();
+  }
+
+  /* ---------- PERCIKAN CAHAYA ---------- */
+  function ledak(x, y, warna, jumlah) {
+    const cincin = document.createElement('div');
+    cincin.className = 'cincin';
+    cincin.style.left = x + 'px';
+    cincin.style.top = y + 'px';
+    document.body.appendChild(cincin);
+    cincin.animate([
+      { transform: 'translate(-50%,-50%) scale(.2)', opacity: .9 },
+      { transform: 'translate(-50%,-50%) scale(3.2)', opacity: 0 }
+    ], { duration: 800, easing: 'ease-out' }).onfinish = () => cincin.remove();
+
+    for (let i = 0; i < jumlah; i++) {
+      const p = document.createElement('div');
+      p.className = 'partikel';
+      const u = 3 + Math.random() * 4;
+      p.style.width = p.style.height = u + 'px';
+      p.style.left = x + 'px';
+      p.style.top = y + 'px';
+      p.style.background = warna;
+      p.style.boxShadow = `0 0 8px ${warna}`;
+      document.body.appendChild(p);
+      const a = Math.PI * 2 * i / jumlah + Math.random() * 0.4;
+      const d = 40 + Math.random() * 55;
+      p.animate([
+        { transform: 'translate(-50%,-50%) scale(1)', opacity: 1 },
+        { transform: `translate(calc(-50% + ${Math.cos(a) * d}px), calc(-50% + ${Math.sin(a) * d}px)) scale(0)`, opacity: 0 }
+      ], { duration: 700 + Math.random() * 400, easing: 'ease-out' }).onfinish = () => p.remove();
+    }
+  }
+
+  /* ---------- BINTANG JATUH ---------- */
+  function meteor() {
+    const m = document.createElement('div');
+    m.className = 'meteor';
+    m.style.left = (45 + Math.random() * 50) + '%';
+    m.style.top = (Math.random() * 35) + '%';
+    document.body.appendChild(m);
+    setTimeout(() => m.remove(), 1400);
+  }
+  setInterval(() => { if (Math.random() < 0.7) meteor(); }, 2500);
+
+  /* ---------- JEJAK KILAU DI JARI ---------- */
+  let terakhir = 0;
+  addEventListener('pointermove', e => {
+    const n = performance.now();
+    if (n - terakhir < 45) return;
+    terakhir = n;
+    const d = document.createElement('div');
+    d.className = 'jejak';
+    d.style.left = e.clientX + 'px';
+    d.style.top = e.clientY + 'px';
+    document.body.appendChild(d);
+    d.animate([
+      { transform: 'translate(-50%,-50%) scale(1)', opacity: .8 },
+      { transform: 'translate(-50%,-50%) scale(0)', opacity: 0 }
+    ], { duration: 600 }).onfinish = () => d.remove();
+  });
+
+  /* ---------- BINTANG UTAMA (grid 3 x 4 biar nggak numpuk) ---------- */
+  const kolom = 3, baris = 4;
+  const x0 = 12, x1 = 88, y0 = 26, y1 = 68;
+  const lebarSel = (x1 - x0) / kolom, tinggiSel = (y1 - y0) / baris;
+  const urutan = ALASAN.map((_, i) => i).sort(() => Math.random() - 0.5);
+
+  const bintang = [];
+  const ketemu = new Set();
+  let selesai = false, akhirMulai = false;
+
+  ALASAN.forEach((_, i) => {
+    const b = document.createElement('div');
+    b.className = 'bintang';
+    const d = document.createElement('span');
+    d.className = 'dalam';
+    d.textContent = '✦';
+    d.style.animationDelay = (Math.random() * 2) + 's';
+    b.appendChild(d);
+
+    const sel = urutan[i];
+    const kx = sel % kolom, ky = Math.floor(sel / kolom);
+    b.style.left = (x0 + kx * lebarSel + lebarSel * (0.2 + Math.random() * 0.6)) + '%';
+    b.style.top  = (y0 + ky * tinggiSel + tinggiSel * (0.2 + Math.random() * 0.6)) + '%';
+    b.style.animationDuration = (4 + Math.random() * 4) + 's';
+    b.style.animationDelay = (-Math.random() * 4) + 's';
+
+    b.addEventListener('click', () => ketuk(b, i));
+    medan.appendChild(b);
+    bintang.push(b);
+  });
+
+  /* ---------- KETUK BINTANG ---------- */
+  function ketuk(el, i) {
+    if (lagu.paused) { lagu.volume = 0.7; lagu.play().catch(() => {}); }
+
+    const r = el.getBoundingClientRect();
+    const x = r.left + r.width / 2, y = r.top + r.height / 2;
+
+    if (akhirMulai) { ledak(x, y, '#ffe9a8', 8); return; }
+
+    ketik(ALASAN[i], 26);
+
+    if (ketemu.has(i) || selesai) { ledak(x, y, '#ffe9a8', 8); return; }
+
+    ketemu.add(i);
+    el.classList.add('ketemu');
+    ledak(x, y, '#ffd166', 14);
+    el.firstChild.animate([
+      { transform: 'scale(1)' },
+      { transform: 'scale(2.3)' },
+      { transform: 'scale(1.25)' }
+    ], { duration: 650, easing: 'ease-out' });
+    hitung.textContent = `✨ ${ketemu.size} / ${ALASAN.length}`;
+    meteor();
+
+    if (ketemu.size === ALASAN.length) {
+      selesai = true;
+      hitung.textContent = '✨ Semua bintang ketemu';
+      for (let k = 0; k < 6; k++) setTimeout(meteor, k * 350);
+      setTimeout(jadiHati, 2500);
+    }
+  }
+
+  /* ---------- BINTANG TERBANG JADI HATI ---------- */
+  function jadiHati() {
+    akhirMulai = true;
+    sub.textContent = 'Coba liat, kalau dirangkai, bentuknya jadi begini.';
+
+    const k = Math.min(innerWidth * 0.8 / 32, innerHeight * 0.36 / 29);
+    const tengahY = innerHeight * 0.46;
+    const cx = innerWidth / 2;
+    const cy = tengahY - 2.5 * k;
+
+    const titik = t => ({
+      x: cx + 16 * Math.pow(Math.sin(t), 3) * k,
+      y: cy - (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * k
+    });
+
+    // bintang terbang ke posisi hati
+    bintang.forEach((b, i) => {
+      const p = titik(0.26 + Math.PI * 2 * i / bintang.length);
+      b.classList.add('susun');
+      b.style.left = p.x + 'px';
+      b.style.top = p.y + 'px';
+    });
+
+    // garis hati digambar pelan-pelan
+    setTimeout(() => {
+      let d = '';
+      for (let j = 0; j <= 240; j++) {
+        const p = titik(Math.PI * 2 * j / 240);
+        d += (j ? 'L' : 'M') + p.x.toFixed(1) + ' ' + p.y.toFixed(1);
+      }
+      petaHati.setAttribute('d', d + 'Z');
+      const panjang = petaHati.getTotalLength();
+      petaHati.style.strokeDasharray = panjang;
+      petaHati.style.strokeDashoffset = panjang;
+      petaHati.getBoundingClientRect();
+      petaHati.style.transition = 'stroke-dashoffset 2s ease-in-out, fill-opacity 1.5s';
+      petaHati.style.strokeDashoffset = 0;
+      setTimeout(() => { petaHati.style.fillOpacity = 0.14; }, 1800);
+    }, 2100);
+
+    // hati berdetak, lalu pesan penutup
+    setTimeout(() => {
+      medan.style.transformOrigin = `${cx}px ${tengahY}px`;
+      medan.classList.add('berdetak');
+      for (let s = 0; s < 4; s++) setTimeout(meteor, s * 300);
+    }, 4300);
+
+    setTimeout(() => {
+      ketik(PENUTUP, 42, () => {
+        ttd.textContent = '— ' + DARI;
+        ttd.classList.add('muncul');
+      });
+    }, 4600);
+  }
+</script>
+</body>
+</html>
